@@ -16,7 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('trip_id');
             $table->foreign('trip_id')->on('trips')->references('id')->onDelete("restrict");
             $table->float('amount')->default(0.0);
-            $table->enum('status', ['Pending', 'Payed', 'Used']);
+            $table->string('status');
+            $table->string('transaction_status');
+            $table->string('ref');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->on('users')->references('id')->onDelete("restrict");
             $table->timestamps();

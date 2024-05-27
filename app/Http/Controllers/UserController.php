@@ -33,6 +33,7 @@ class UserController extends Controller
         $request->validate([
             "name" => "required|string",
             "email" => "required|email|unique:users,email",
+            "phone" => "required|numeric|regex:/^07\d{8}$/",
             "password" => "required|string",
             "confirmPassword" => "required|string",
         ]);
@@ -40,6 +41,7 @@ class UserController extends Controller
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->phone = $request->phone;
             $user->password = bcrypt($request->password);
             $user->role = 'passenger';
             $user->save();
@@ -73,6 +75,7 @@ class UserController extends Controller
         $request->validate([
             "name" => "required|string",
             "email" => "required|email",
+            "phone" => "required|numeric|regex:/^07\d{8}$/",
             "password" => "required|string",
             "confirmPassword" => "required|string",
         ]);
@@ -81,6 +84,7 @@ class UserController extends Controller
             $user = User::find(Auth::id());
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->phone = $request->phone;
             $user->password = bcrypt($request->password);
             $user->update();
             return redirect()->back();

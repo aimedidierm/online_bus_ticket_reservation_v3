@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentStatus;
+use App\Enums\TransactionStatus;
 use App\Models\Bus;
 use App\Models\Payment;
 use App\Models\Trip;
@@ -9,6 +11,7 @@ use App\Rules\NotInPastDatetime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Paypack\Paypack;
+use Symfony\Component\HttpFoundation\Response;
 
 class TripController extends Controller
 {
@@ -53,19 +56,31 @@ class TripController extends Controller
         if ($trip) {
             $trip->available_places = $trip->available_places - 1;
             $trip->update();
+
+            $paypackInstance = $this->paypackConfig()->Cashin([
+                "amount" => $trip->price,
+                "phone" => $request->phone,
+            ]);
+
+            if ($paypackInstance === false) {
+                return response()->json([
+                    'message' => 'Payment failed',
+                    'success' => false,
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
             $payment = new Payment;
             $payment->trip_id = $request->trip;
             $payment->amount = $trip->price;
-            $payment->status = 'Payed';
+            $payment->status = PaymentStatus::PENDING->value;
+            $payment->transaction_status = TransactionStatus::PENDING->value;
+            $payment->ref = $paypackInstance['ref'];
             $payment->seat = $trip->available_places;
             $payment->user_id = Auth::id();
             $payment->created_at = now();
             $payment->updated_at = null;
             $payment->save();
-            $paypackInstance = $this->paypackConfig()->Cashin([
-                "amount" => $trip->price,
-                "phone" => $request->phone,
-            ]);
+
             return redirect('/passenger/payments');
         } else {
             return redirect()->back()->withErrors('Trip not found');
@@ -94,7 +109,7 @@ class TripController extends Controller
             "origin" => "required|string",
             "destination" => "required|string",
             "datetime" => ["required", "date", new NotInPastDatetime],
-            "price" => "required|numeric",
+            "price" => "required|numeric|min:105",
             "bus" => "required|integer",
         ]);
 

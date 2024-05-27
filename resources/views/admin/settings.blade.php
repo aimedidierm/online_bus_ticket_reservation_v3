@@ -27,6 +27,13 @@
                 </div>
 
                 <div class="mb-4">
+                    <label for="phone" class="block text-gray-700 font-bold mb-2">Phone</label>
+                    <input type="text" id="phone" name="phone"
+                        class="w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
+                        placeholder="Enter your phone" value="{{Auth::user()->phone}}" required>
+                </div>
+
+                <div class="mb-4">
                     <label for="password" class="block text-gray-700 font-bold mb-2">Password</label>
                     <input type="password" id="password" name="password"
                         class="w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500"
