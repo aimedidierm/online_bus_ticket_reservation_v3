@@ -109,7 +109,7 @@ class TripController extends Controller
             "origin" => "required|string",
             "destination" => "required|string",
             "datetime" => ["required", "date", new NotInPastDatetime],
-            "price" => "required|numeric|min:105",
+            "price" => "required|numeric|min:120",
             "bus" => "required|integer",
         ]);
 

@@ -17,6 +17,7 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 const char* ssid = "Balance";
 const char* password = "balance1234";
 int buzzerPin = D0;
+int ledPin = D8;
 String content = "";
 
 
@@ -25,6 +26,7 @@ void setup()
   Serial.begin(9600);
   SPI.begin();
   pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
   mfrc522.PCD_Init();
   lcd.init();
   lcd.init();
@@ -159,6 +161,7 @@ void updateStatus() {
         Serial.printf("[HTTPS] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
         lcd.clear(),
                   lcd.print("Ntibikunze");
+                  playAlarm();
         delay(3000);
         readcard();
       }
@@ -169,6 +172,7 @@ void updateStatus() {
       Serial.println("[HTTPS] Unable to connect");
       lcd.clear(),
                 lcd.print("Guhuza ntibikunze");
+                playAlarm();
       delay(3000);
       readcard();
     }
@@ -183,7 +187,9 @@ void playBeep(int frequency, int duration) {
 
 void playAlarm() {
   for (int i = 0; i < 3; i++) {
+    digitalWrite(ledPin, HIGH);
     playBeep(1000, 200);
+    digitalWrite(ledPin, LOW);
     delay(200);
   }
 }

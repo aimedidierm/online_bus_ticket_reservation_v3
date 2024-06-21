@@ -77,7 +77,6 @@ class PaymentController extends Controller
                     $admin = User::where('role', 'admin')->first();
 
                     $transaction->status = PaymentStatus::PAYED->value;
-
                     $this->paypackConfig()->Cashout([
                         "amount" => $this->calculateAmount($payment->data->amount),
                         "phone" => $admin->phone,
